@@ -13,6 +13,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import mddev0.hellcore.Hellcore;
+import mddev0.hellcore.Hellcore.Mode;
+
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
@@ -35,21 +37,15 @@ public class RespawnListener implements Listener {
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent respawn) {
 		Player player = respawn.getPlayer();
-		switch ((Hellcore.Mode)plugin.getConfig().get("mode")) {
+		switch ((Mode)plugin.getConfig().get("mode")) {
 		case CORRUPT:
 			// TODO: Logic for final player remaining
+			if (countRegular() < 1) {
+				
+			}
+		//$FALL-THROUGH$ (intended fall-through)
 		case RESPAWN:
-			// Reassign player group
-			Group escapingGroup = lp.getGroupManager().getGroup(plugin.getConfig().getString("escapingPermissionGroup"));
-			lp.getUserManager().modifyUser(player.getUniqueId(), (User user) -> {
-			Node escapingNode = InheritanceNode.builder(escapingGroup).build();
-			user.data().add(escapingNode); // Is now trying to escape
-			lp.getUserManager().saveUser(user);
-		});
-			if (plugin.getConfig().getBoolean("useTeams"))
-				plugin.getServer().getScoreboardManager().getMainScoreboard()
-				.getTeam(plugin.getConfig().getString("escapingTeam"))
-				.addEntry(player.getName());
+			setGroupAndTeam(player);
 			// Set spawn location and send message
 			respawn.setRespawnLocation(getRandomLocation(Bukkit.getWorld(plugin.getConfig().getString("respawnWorld"))));
 			player.sendMessage(ChatColor.DARK_RED + plugin.getConfig().getString("respawnMessage"));
@@ -61,6 +57,26 @@ public class RespawnListener implements Listener {
 		default:
 			//do nothing, default respawn logic
 		}
+	}
+
+	private int countRegular() {
+		// FIXME: WRITE THIS
+		return 0;
+	}
+
+	private void setGroupAndTeam(Player p) {
+		// Reassign player group
+		Group groupToSet = lp.getGroupManager().getGroup(plugin.getConfig().getString("escapingPermissionGroup"));
+		lp.getUserManager().modifyUser(p.getUniqueId(), (User user) -> {
+			Node nodeToSet = InheritanceNode.builder(groupToSet).build();
+			user.data().add(nodeToSet); // Is now trying to escape
+			lp.getUserManager().saveUser(user);
+		});
+		// Reassign player team
+		if (plugin.getConfig().getBoolean("useTeams"))
+			plugin.getServer().getScoreboardManager().getMainScoreboard()
+			.getTeam(plugin.getConfig().getString("escapingTeam"))
+			.addEntry(p.getName());
 	}
 
 	private Location getRandomLocation(World world) {

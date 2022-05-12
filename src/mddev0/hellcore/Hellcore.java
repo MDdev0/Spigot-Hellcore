@@ -39,15 +39,18 @@ public class Hellcore extends JavaPlugin {
 		config.addDefault("respawnMessage", "Welcome to the nether.");
 		config.addDefault("mode", Mode.RESPAWN);
 		config.addDefault("autoChangeMode", true); // TODO: IMPLEMENT
-		config.addDefault("escapingPermissionGroup", "trapped"); // TODO: IMPLEMENT
-		config.addDefault("corruptPermissionGroup", "corrupt"); // TODO: IMPLEMENT
-		config.addDefault("useTeams", true); // TODO: IMPLEMENT
-		config.addDefault("regularTeam", "regular"); // TODO: IMPLEMENT
-		config.addDefault("escapingTeam", "trapped"); // TODO: IMPLEMENT
-		config.addDefault("corruptTeam", "corrupt"); // TODO: IMPLEMENT
-		config.addDefault("exitLocation", new Location(getServer().getWorld("world_nether"),0.5,128,0.5)); // TODO: IMPLEMENT
-		config.addDefault("exitRadius", 5); // TODO: IMPLEMENT
+		config.addDefault("regularPermissionGroup", "regular");
+		config.addDefault("escapingPermissionGroup", "trapped");
+		config.addDefault("corruptPermissionGroup", "corrupt");
+		config.addDefault("useTeams", true);
+		config.addDefault("regularTeam", "regular");
+		config.addDefault("escapingTeam", "trapped");
+		config.addDefault("corruptTeam", "corrupt");
+		config.addDefault("exitLocation", new Location(getServer().getWorld("world_nether"),0.5,128,0.5));
+		config.addDefault("exitRadius", 5.0);
+		config.addDefault("exitToWorld", "world");
 		config.options().copyDefaults(true);
     	saveConfig();
+    	// TODO: Portal exit prevention for Escaping group
 	}
 }
