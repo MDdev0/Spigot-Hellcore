@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import mddev0.hellcore.listeners.RespawnListener;
+
 import net.luckperms.api.LuckPerms;
 
 public class Hellcore extends JavaPlugin {
@@ -24,7 +25,7 @@ public class Hellcore extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		
+		saveConfig();
 	}
 	
 	private void setupConfig() {
@@ -38,7 +39,7 @@ public class Hellcore extends JavaPlugin {
 		config.addDefault("respawnWorld", "world_nether");
 		config.addDefault("respawnMessage", "Welcome to the nether.");
 		config.addDefault("mode", Mode.RESPAWN);
-		config.addDefault("autoChangeMode", true); // TODO: IMPLEMENT
+		config.addDefault("autoChangeMode", true);
 		config.addDefault("regularPermissionGroup", "regular");
 		config.addDefault("escapingPermissionGroup", "trapped");
 		config.addDefault("corruptPermissionGroup", "corrupt");

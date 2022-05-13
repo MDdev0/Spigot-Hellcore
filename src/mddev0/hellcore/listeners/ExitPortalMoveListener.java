@@ -28,7 +28,8 @@ public class ExitPortalMoveListener implements Listener {
 	@EventHandler
 	public void onRadiusEntry(PlayerMoveEvent move) {
 		Mode mode = (Mode)plugin.getConfig().get("mode");
-		if (mode != Mode.CORRUPT && mode != Mode.RESPAWN) return; // Cancel if escaping isn't enabled
+		if (mode != Mode.CORRUPT && mode != Mode.RESPAWN && mode != Mode.PERMADEATH) return; // Cancel if escaping isn't enabled
+		// NOTE: Escaping is possible during permadeath if the player was already attempting to escape.
 		Location target = plugin.getConfig().getLocation("exitLocation");
 		if (move.getTo().getWorld() != target.getWorld()) return; // Cancel if in same world
 		if (move.getTo().distanceSquared(move.getFrom()) == 0) return; // Cancel if hasn't moved
@@ -60,7 +61,7 @@ public class ExitPortalMoveListener implements Listener {
 		});
 		// Add player to correct group
 		Group groupToSet = lp.getGroupManager().getGroup(plugin.getConfig().getString(
-				mode == Mode.CORRUPT ? "corruptPermissionGroup" : "regularPermissionGroup"));
+				mode == Mode.RESPAWN ? "regularPermissionGroup" : "corruptPermissionGroup"));
 		lp.getUserManager().modifyUser(p.getUniqueId(), (User user) -> {
 			Node nodeToSet = InheritanceNode.builder(groupToSet).build();
 			user.data().add(nodeToSet); // Set new group
@@ -70,7 +71,7 @@ public class ExitPortalMoveListener implements Listener {
 		if (plugin.getConfig().getBoolean("useTeams"))
 			plugin.getServer().getScoreboardManager().getMainScoreboard()
 			.getTeam(plugin.getConfig().getString(
-					mode == Mode.CORRUPT ? "corruptTeam" : "regularTeam"))
+					mode == Mode.RESPAWN ? "regularTeam" : "corruptTeam"))
 			.addEntry(p.getName());
 	}
 }

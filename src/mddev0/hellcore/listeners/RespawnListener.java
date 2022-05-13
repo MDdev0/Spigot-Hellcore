@@ -1,6 +1,12 @@
 package mddev0.hellcore.listeners;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,11 +25,9 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
+import net.luckperms.api.node.matcher.NodeMatcher;
 import net.luckperms.api.node.types.InheritanceNode;
 
-/**
- * @author MDDev0
- */
 public class RespawnListener implements Listener {
 	
 	private Hellcore plugin;
@@ -39,9 +43,23 @@ public class RespawnListener implements Listener {
 		Player player = respawn.getPlayer();
 		switch ((Mode)plugin.getConfig().get("mode")) {
 		case CORRUPT:
-			// TODO: Logic for final player remaining
-			if (countRegular() < 1) {
-				
+			if (plugin.getConfig().getBoolean("autoChangeMode")) {
+				try {
+					// SCUFFED: I may or may not be getting data from files synchronously... shhhhh
+					int count = countRegular().get();
+					if (count == 0) {
+						plugin.getServer().broadcastMessage(ChatColor.GOLD + "The last uncorrupted player has died. "
+								+ ChatColor.RED + "Respawning is now disabled.");
+						plugin.getLogger().info("The last regular player has died. Changing to permadeath mode.");
+						plugin.getConfig().set("mode", Mode.PERMADEATH);
+						plugin.saveConfig();
+						
+					} else {
+						plugin.getLogger().info("There are " + count + " regular players remaining.");
+					}
+				} catch (InterruptedException | ExecutionException e) {
+					plugin.getLogger().log(Level.WARNING, "An error occurred while counting remaining players:", e);
+				}
 			}
 		//$FALL-THROUGH$ (intended fall-through)
 		case RESPAWN:
@@ -59,9 +77,13 @@ public class RespawnListener implements Listener {
 		}
 	}
 
-	private int countRegular() {
-		// FIXME: WRITE THIS
-		return 0;
+	private CompletableFuture<Integer> countRegular() {
+		CompletableFuture<Integer> count = new CompletableFuture<>();
+		NodeMatcher<InheritanceNode> match = NodeMatcher.key(InheritanceNode.builder(plugin.getConfig().getString("regularPermissionGroup")).build());
+		lp.getUserManager().searchAll(match).thenAccept((Map<UUID, Collection<InheritanceNode>> map) -> {
+			count.complete(map.size());
+		});
+		return count;
 	}
 
 	private void setGroupAndTeam(Player p) {
