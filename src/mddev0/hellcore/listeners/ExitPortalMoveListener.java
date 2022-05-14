@@ -1,5 +1,8 @@
 package mddev0.hellcore.listeners;
 
+import java.util.logging.Level;
+
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,7 +30,7 @@ public class ExitPortalMoveListener implements Listener {
 	
 	@EventHandler
 	public void onRadiusEntry(PlayerMoveEvent move) {
-		Mode mode = (Mode)plugin.getConfig().get("mode");
+		Mode mode = plugin.mode();
 		if (mode != Mode.CORRUPT && mode != Mode.RESPAWN && mode != Mode.PERMADEATH) return; // Cancel if escaping isn't enabled
 		// NOTE: Escaping is possible during permadeath if the player was already attempting to escape.
 		Location target = plugin.getConfig().getLocation("exitLocation");
@@ -48,7 +51,12 @@ public class ExitPortalMoveListener implements Listener {
 					lp.getContextManager().getQueryOptions(p)).contains(escapingGroup))
 				setGroupAndTeam(p, escapingGroup, mode);
 			// teleport players regardless of group
-			move.getPlayer().teleport(plugin.getServer().getWorld(plugin.getConfig().getString("exitToWorld")).getSpawnLocation(), TeleportCause.PLUGIN);
+			move.getPlayer().teleport(plugin.getServer().getWorld(plugin.getConfig().getString("exitToWorld")).getSpawnLocation()
+					, TeleportCause.PLUGIN);
+			if (mode == Mode.RESPAWN)
+				p.sendMessage(ChatColor.DARK_AQUA + plugin.getConfig().getString("escapeMessage"));
+			else
+				p.sendMessage(ChatColor.LIGHT_PURPLE + plugin.getConfig().getString("corruptMessage"));
 		}
 	}
 
@@ -67,11 +75,18 @@ public class ExitPortalMoveListener implements Listener {
 			user.data().add(nodeToSet); // Set new group
 			lp.getUserManager().saveUser(user);
 		});
-		// Reassign player team
-		if (plugin.getConfig().getBoolean("useTeams"))
-			plugin.getServer().getScoreboardManager().getMainScoreboard()
-			.getTeam(plugin.getConfig().getString(
-					mode == Mode.RESPAWN ? "regularTeam" : "corruptTeam"))
-			.addEntry(p.getName());
+		try {
+			// Reassign player team
+			if (plugin.getConfig().getBoolean("useTeams"))
+				plugin.getServer().getScoreboardManager().getMainScoreboard()
+				.getTeam(plugin.getConfig().getString(
+							mode == Mode.RESPAWN ? "regularTeam" : "corruptTeam"))
+				.addEntry(p.getName());
+		} catch (NullPointerException npx) {
+			plugin.getLogger().log(Level.WARNING, "Could not assign " + p.getName() + " to "
+					+ plugin.getConfig().getString(
+							mode == Mode.RESPAWN ? "regularTeam" : "corruptTeam") 
+					+ ", the team does not exist.");
+		}
 	}
 }

@@ -41,7 +41,7 @@ public class RespawnListener implements Listener {
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent respawn) {
 		Player player = respawn.getPlayer();
-		switch ((Mode)plugin.getConfig().get("mode")) {
+		switch ((Mode)plugin.mode()) {
 		case CORRUPT:
 			if (plugin.getConfig().getBoolean("autoChangeMode")) {
 				try {
@@ -51,7 +51,7 @@ public class RespawnListener implements Listener {
 						plugin.getServer().broadcastMessage(ChatColor.GOLD + "The last uncorrupted player has died. "
 								+ ChatColor.RED + "Respawning is now disabled.");
 						plugin.getLogger().info("The last regular player has died. Changing to permadeath mode.");
-						plugin.getConfig().set("mode", Mode.PERMADEATH);
+						plugin.mode(Mode.PERMADEATH);
 						plugin.saveConfig();
 						
 					} else {
@@ -81,7 +81,9 @@ public class RespawnListener implements Listener {
 		CompletableFuture<Integer> count = new CompletableFuture<>();
 		NodeMatcher<InheritanceNode> match = NodeMatcher.key(InheritanceNode.builder(plugin.getConfig().getString("regularPermissionGroup")).build());
 		lp.getUserManager().searchAll(match).thenAccept((Map<UUID, Collection<InheritanceNode>> map) -> {
-			count.complete(map.size());
+			plugin.getLogger().log(Level.INFO, map.keySet().toString());
+			plugin.getLogger().log(Level.INFO, "Size " + map.keySet().size());
+			count.complete(map.keySet().size());
 		});
 		return count;
 	}
@@ -94,13 +96,18 @@ public class RespawnListener implements Listener {
 			user.data().add(nodeToSet); // Is now trying to escape
 			lp.getUserManager().saveUser(user);
 		});
-		// Reassign player team
-		if (plugin.getConfig().getBoolean("useTeams"))
-			plugin.getServer().getScoreboardManager().getMainScoreboard()
-			.getTeam(plugin.getConfig().getString("escapingTeam"))
-			.addEntry(p.getName());
+		try {
+			// Reassign player team
+			if (plugin.getConfig().getBoolean("useTeams"))
+				plugin.getServer().getScoreboardManager().getMainScoreboard()
+				.getTeam(plugin.getConfig().getString("escapingTeam"))
+				.addEntry(p.getName());
+		} catch (NullPointerException npx) {
+			plugin.getLogger().log(Level.WARNING, "Could not assign " + p.getName() + " to "
+					+ plugin.getConfig().getString("escapingTeam") + ", the team does not exist.");
+		}
 	}
-
+	
 	private Location getRandomLocation(World world) {
 		int xMin = plugin.getConfig().getInt("xMin");
 		int xMax = plugin.getConfig().getInt("xMax");
