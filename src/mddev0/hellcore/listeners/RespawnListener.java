@@ -12,11 +12,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.CompassMeta;
 
 import mddev0.hellcore.Hellcore;
 import mddev0.hellcore.Hellcore.Mode;
@@ -67,6 +72,17 @@ public class RespawnListener implements Listener {
 			// Set spawn location and send message
 			respawn.setRespawnLocation(getRandomLocation(Bukkit.getWorld(plugin.getConfig().getString("respawnWorld"))));
 			player.sendMessage(ChatColor.DARK_RED + plugin.getConfig().getString("respawnMessage"));
+			if (plugin.getConfig().getBoolean("giveHelpCompass")) {
+				ItemStack helpCompass = new ItemStack(Material.COMPASS);
+				CompassMeta compassData = (CompassMeta) helpCompass.getItemMeta();
+				compassData.setLodestoneTracked(false);
+				compassData.setLodestone(plugin.getConfig().getLocation("exitLocation"));
+				compassData.addEnchant(Enchantment.VANISHING_CURSE, 1, false);
+				compassData.setDisplayName(ChatColor.DARK_GREEN + "Exit Compass");
+				compassData.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+				helpCompass.setItemMeta(compassData);
+				player.getInventory().addItem(helpCompass);
+			}
 			break;
 		case PERMADEATH:
 			player.setGameMode(GameMode.SPECTATOR);

@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import mddev0.hellcore.listeners.ExitPortalMoveListener;
+import mddev0.hellcore.listeners.IllegalPortalListener;
 import mddev0.hellcore.listeners.RespawnListener;
 
 import net.luckperms.api.LuckPerms;
@@ -30,6 +31,7 @@ public class Hellcore extends JavaPlugin {
 		// Register Events
 		getServer().getPluginManager().registerEvents(new RespawnListener(this, luckPerms), this);
 		getServer().getPluginManager().registerEvents(new ExitPortalMoveListener(this, luckPerms), this);
+		getServer().getPluginManager().registerEvents(new IllegalPortalListener(this, luckPerms), this);
 	}
 	
 	@Override
@@ -41,13 +43,14 @@ public class Hellcore extends JavaPlugin {
 		config.addDefault("xMin", -1000);
 		config.addDefault("xMax", 1000);
 		config.addDefault("yMin", 0);
-		config.addDefault("yMax", 127);
+		config.addDefault("yMax", 125);
 		config.addDefault("zMin", -1000);
 		config.addDefault("zMax", 1000);
 		config.addDefault("respawnWorld", "world_nether");
 		config.addDefault("respawnMessage", "Welcome to the nether.");
 		config.addDefault("escapeMessage", "You've escaped! Welcome back.");
 		config.addDefault("corruptMessage", "You're back in the overworld, but it's not quite the same. You are now allowed to attack.");
+		config.addDefault("portalExplodeMessage", "You really thought you could get out that easy?");
 		config.addDefault("mode", Mode.RESPAWN.name());
 		currentMode = Mode.valueOf(config.get("mode").toString().toUpperCase());
 		config.addDefault("autoChangeMode", true);
@@ -61,9 +64,9 @@ public class Hellcore extends JavaPlugin {
 		config.addDefault("exitLocation", new Location(getServer().getWorld("world_nether"),0.5,128,0.5));
 		config.addDefault("exitRadius", 5.0);
 		config.addDefault("exitToWorld", "world");
+		config.addDefault("giveHelpCompass", true);
 		config.options().copyDefaults(true);
     	saveConfig();
-    	// TODO: Portal exit prevention for Escaping group
 	}
 	
 	public Mode mode() { return currentMode; }
