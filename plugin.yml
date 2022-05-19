@@ -3,3 +3,9 @@ main: mddev0.hellcore.Hellcore
 version: 1.0
 api-version: 1.18
 depend: [LuckPerms]
+commands:
+    hellcore:
+        description: One command for all management of the Hellcore plugin.
+        aliases: [hc]
+        usage: /hellcore <mode|setplayer|setexit|config|help>
+        permission: hellcore.command
