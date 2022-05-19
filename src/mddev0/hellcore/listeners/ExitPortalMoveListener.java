@@ -37,7 +37,7 @@ public class ExitPortalMoveListener implements Listener {
 		if (move.getTo().getWorld() != target.getWorld()) return; // Cancel if in same world
 		if (move.getTo().distanceSquared(move.getFrom()) == 0) return; // Cancel if hasn't moved
 		double radius = plugin.getConfig().getDouble("exitRadius");
-		if (target.distanceSquared(move.getFrom()) < (radius*radius) ) return; // Cancel if player was already inside region
+	if (target.distanceSquared(move.getFrom()) < (radius*radius) ) return; // Cancel if player was already inside region
 		/* AT THIS POINT:
 		 * - Player is in correct dimension
 		 * - Player has moved
@@ -47,16 +47,20 @@ public class ExitPortalMoveListener implements Listener {
 			Player p = move.getPlayer();
 			Group escapingGroup = lp.getGroupManager().getGroup(plugin.getConfig().getString("escapingPermissionGroup"));
 			// Change group and team of players that are escaping
+			// Also only announce if escaping
 			if (lp.getUserManager().getUser(p.getUniqueId()).getInheritedGroups(
-					lp.getContextManager().getQueryOptions(p)).contains(escapingGroup))
+					lp.getContextManager().getQueryOptions(p)).contains(escapingGroup)) {
 				setGroupAndTeam(p, escapingGroup, mode);
+				plugin.getServer().broadcastMessage(ChatColor.BLUE + 
+						plugin.getConfig().getString("escapeServerMessage").replaceAll("%PLAYER%", move.getPlayer().getName()));
+				if (mode == Mode.RESPAWN)
+					p.sendMessage(ChatColor.DARK_AQUA + plugin.getConfig().getString("escapeMessage"));
+				else
+					p.sendMessage(ChatColor.LIGHT_PURPLE + plugin.getConfig().getString("corruptMessage"));
+			}
 			// teleport players regardless of group
 			move.getPlayer().teleport(plugin.getServer().getWorld(plugin.getConfig().getString("exitToWorld")).getSpawnLocation()
 					, TeleportCause.PLUGIN);
-			if (mode == Mode.RESPAWN)
-				p.sendMessage(ChatColor.DARK_AQUA + plugin.getConfig().getString("escapeMessage"));
-			else
-				p.sendMessage(ChatColor.LIGHT_PURPLE + plugin.getConfig().getString("corruptMessage"));
 		}
 	}
 

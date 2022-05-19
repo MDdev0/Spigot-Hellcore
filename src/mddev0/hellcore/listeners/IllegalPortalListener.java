@@ -9,7 +9,7 @@ import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.util.Vector;
 
 import mddev0.hellcore.Hellcore;
-
+import mddev0.hellcore.Hellcore.Mode;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.group.Group;
 
@@ -25,6 +25,7 @@ public class IllegalPortalListener implements Listener {
 	
 	@EventHandler
 	public void onIllegalPortalEntry(EntityPortalEnterEvent portal) {
+		if (plugin.mode() == Mode.DISABLE) return; // Cancel if disabled
 		Group escapingGroup = lp.getGroupManager().getGroup(plugin.getConfig().getString("escapingPermissionGroup"));
 		if (portal.getEntityType() != EntityType.PLAYER) return;
 		Player player = (Player) portal.getEntity();

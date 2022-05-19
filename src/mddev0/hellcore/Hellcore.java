@@ -50,6 +50,7 @@ public class Hellcore extends JavaPlugin {
 		config.addDefault("respawnMessage", "Welcome to the nether.");
 		config.addDefault("escapeMessage", "You've escaped! Welcome back.");
 		config.addDefault("corruptMessage", "You're back in the overworld, but it's not quite the same. You are now allowed to attack.");
+		config.addDefault("escapeServerMessage", "%PLAYER% has escaped from the nether!");
 		config.addDefault("portalExplodeMessage", "You really thought you could get out that easy?");
 		config.addDefault("mode", Mode.RESPAWN.name());
 		currentMode = Mode.valueOf(config.get("mode").toString().toUpperCase());
@@ -61,6 +62,7 @@ public class Hellcore extends JavaPlugin {
 		config.addDefault("regularTeam", "regular");
 		config.addDefault("escapingTeam", "trapped");
 		config.addDefault("corruptTeam", "corrupt");
+		config.addDefault("autoAssignNewPlayers", true);
 		config.addDefault("exitLocation", new Location(getServer().getWorld("world_nether"),0.5,128,0.5));
 		config.addDefault("exitRadius", 5.0);
 		config.addDefault("exitToWorld", "world");

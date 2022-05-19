@@ -46,7 +46,7 @@ public class RespawnListener implements Listener {
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent respawn) {
 		Player player = respawn.getPlayer();
-		switch ((Mode)plugin.mode()) {
+		switch (plugin.mode()) {
 		case CORRUPT:
 			if (plugin.getConfig().getBoolean("autoChangeMode")) {
 				try {
