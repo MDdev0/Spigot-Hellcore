@@ -1,12 +1,13 @@
 package mddev0.hellcore;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import mddev0.hellcore.Hellcore.Mode;
+
 import net.luckperms.api.LuckPerms;
-import net.md_5.bungee.api.ChatColor;
 
 public class HellcoreCommand implements CommandExecutor {
 	
