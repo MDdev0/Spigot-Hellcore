@@ -51,7 +51,7 @@ public class RespawnListener implements Listener {
 			if (plugin.getConfig().getBoolean("autoChangeMode")) {
 				try {
 					// SCUFFED: I may or may not be getting data from files synchronously... shhhhh
-					int count = countRegular().get();
+					int count = countRegular().get() - 1;
 					if (count == 0) {
 						plugin.getServer().broadcastMessage(ChatColor.GOLD + "The last uncorrupted player has died. "
 								+ ChatColor.RED + "Respawning is now disabled.");
