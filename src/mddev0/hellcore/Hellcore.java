@@ -32,6 +32,9 @@ public class Hellcore extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new RespawnListener(this, luckPerms), this);
 		getServer().getPluginManager().registerEvents(new ExitPortalMoveListener(this, luckPerms), this);
 		getServer().getPluginManager().registerEvents(new IllegalPortalListener(this, luckPerms), this);
+		
+		// Register Command
+		this.getCommand("hellcore").setExecutor(new HellcoreCommand(this, luckPerms));
 	}
 	
 	@Override
@@ -64,7 +67,7 @@ public class Hellcore extends JavaPlugin {
 		config.addDefault("corruptTeam", "corrupt");
 		config.addDefault("autoAssignNewPlayers", true);
 		config.addDefault("exitLocation", new Location(getServer().getWorld("world_nether"),0.5,128,0.5));
-		config.addDefault("exitRadius", 5.0);
+		config.addDefault("exitRadius", 3.0);
 		config.addDefault("exitToWorld", "world");
 		config.addDefault("giveHelpCompass", true);
 		config.options().copyDefaults(true);

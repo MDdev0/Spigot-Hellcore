@@ -97,8 +97,6 @@ public class RespawnListener implements Listener {
 		CompletableFuture<Integer> count = new CompletableFuture<>();
 		NodeMatcher<InheritanceNode> match = NodeMatcher.key(InheritanceNode.builder(plugin.getConfig().getString("regularPermissionGroup")).build());
 		lp.getUserManager().searchAll(match).thenAccept((Map<UUID, Collection<InheritanceNode>> map) -> {
-			plugin.getLogger().log(Level.INFO, map.keySet().toString());
-			plugin.getLogger().log(Level.INFO, "Size " + map.keySet().size());
 			count.complete(map.keySet().size());
 		});
 		return count;
@@ -110,6 +108,20 @@ public class RespawnListener implements Listener {
 		lp.getUserManager().modifyUser(p.getUniqueId(), (User user) -> {
 			Node nodeToSet = InheritanceNode.builder(groupToSet).build();
 			user.data().add(nodeToSet); // Is now trying to escape
+			lp.getUserManager().saveUser(user);
+		});
+		// Remove them from regular group
+		Group regularRemove = lp.getGroupManager().getGroup(plugin.getConfig().getString("regularPermissionGroup"));
+		lp.getUserManager().modifyUser(p.getUniqueId(), (User user) -> {
+			Node nodeToRemove = InheritanceNode.builder(regularRemove).build();
+			user.data().remove(nodeToRemove); // Is no longer regular
+			lp.getUserManager().saveUser(user);
+		});
+		// Remove them from corrupt group
+		Group corruptRemove = lp.getGroupManager().getGroup(plugin.getConfig().getString("corruptPermissionGroup"));
+		lp.getUserManager().modifyUser(p.getUniqueId(), (User user) -> {
+			Node nodeToRemove = InheritanceNode.builder(corruptRemove).build();
+			user.data().remove(nodeToRemove); // Is no longer corrupt
 			lp.getUserManager().saveUser(user);
 		});
 		try {
