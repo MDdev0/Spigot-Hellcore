@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import mddev0.hellcore.listeners.ExitPortalMoveListener;
 import mddev0.hellcore.listeners.FinalDeathListener;
 import mddev0.hellcore.listeners.IllegalPortalListener;
+import mddev0.hellcore.listeners.NewPlayerListener;
 import mddev0.hellcore.listeners.RespawnListener;
 
 import net.luckperms.api.LuckPerms;
@@ -33,6 +34,7 @@ public class Hellcore extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new RespawnListener(this, luckPerms), this);
 		getServer().getPluginManager().registerEvents(new ExitPortalMoveListener(this, luckPerms), this);
 		getServer().getPluginManager().registerEvents(new IllegalPortalListener(this, luckPerms), this);
+		getServer().getPluginManager().registerEvents(new NewPlayerListener(this, luckPerms), this);
 		getServer().getPluginManager().registerEvents(new FinalDeathListener(this), this);
 		
 		// Register Command

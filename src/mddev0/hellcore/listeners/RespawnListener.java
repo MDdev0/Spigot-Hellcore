@@ -70,7 +70,8 @@ public class RespawnListener implements Listener {
 		case RESPAWN:
 			setGroupAndTeam(player);
 			// Set spawn location and send message
-			respawn.setRespawnLocation(getRandomLocation(Bukkit.getWorld(plugin.getConfig().getString("respawnWorld"))));
+			Location respawnLoc = getRandomLocation(Bukkit.getWorld(plugin.getConfig().getString("respawnWorld")));
+			respawn.setRespawnLocation(respawnLoc);
 			player.sendMessage(ChatColor.DARK_RED + plugin.getConfig().getString("respawnMessage"));
 			if (plugin.getConfig().getBoolean("giveHelpCompass")) {
 				ItemStack helpCompass = new ItemStack(Material.COMPASS);
@@ -147,7 +148,7 @@ public class RespawnListener implements Listener {
 		Location loc;
 		Random r = new Random();
 		do {
-			// Get a random location at the bottom of the Y range
+			// Get a random location at the top of the Y range
 			loc = new Location(world, (r.nextInt(Math.abs(xMin) + Math.abs(xMax)) + xMin), yMax, (r.nextInt(Math.abs(zMin) + Math.abs(zMax)) + zMin));
 			for (int y = loc.getBlockY(); y > yMin; y--) {
 				loc.setY(y);
