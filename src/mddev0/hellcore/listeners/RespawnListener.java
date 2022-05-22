@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
+import org.bukkit.util.Vector;
 
 import mddev0.hellcore.Hellcore;
 import mddev0.hellcore.Hellcore.Mode;
@@ -159,6 +160,8 @@ public class RespawnListener implements Listener {
 							world.getBlockAt(loc.getBlockX(), loc.getBlockY()+2, loc.getBlockZ()).isEmpty()) {
 						unsafe = false;
 						loc.setY(y+1);
+						// Center respawn location on block
+						loc.add(new Vector(0.5, 0, 0.5));
 						break; // Break out of the loop if safe
 					} else
 						unsafe = true;
